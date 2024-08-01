@@ -257,6 +257,32 @@ WORDPRESS
 ===================================
 
 wpscan --url URL -e u  --> enumerar los usuarios
+wpscan --url URL --passwords /usr/share/wordlist/rockyou.txt
 
 
+===================================
+SSH
+===================================
 
+hydra -P /usr/share/mestasploid-framework/data/wordlist/unix_users.txt -L /usr/share/mestasploid-framework/data/wordlist/unix_passwords.txt ssh://IP
+
+===================================
+LINUX
+===================================
+
+sudo -l --> puedes ver si tengo algo de permisos de root para ejecutar algo
+
+
+===================================
+DNS
+===================================
+
+dig 	Versatile DNS lookup tool that supports various query types (A, MX, NS, TXT, etc.) and detailed output.
+nslookup 	Simpler DNS lookup tool, primarily for A, AAAA, and MX records.
+host 	Streamlined DNS lookup tool with concise output.
+dnsenum 	Automated DNS enumeration tool, dictionary attacks, brute-forcing, zone transfers (if allowed).
+fierce 	DNS reconnaissance and subdomain enumeration tool with recursive search and wildcard detection.
+dnsrecon 	Combines multiple DNS reconnaissance techniques and supports various output formats.
+theHarvester 	OSINT tool that gathers information from various sources, including DNS records (email addresses).
+
+dnsenum --enum inlanefreight.com -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -r
