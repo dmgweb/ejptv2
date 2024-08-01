@@ -7,6 +7,7 @@ draw.io
 NMAP (DESCUBRIMIENTO)
 ===================================
 
+nmap -p- -sC -sV IP --> Revisa todos los puertos lanza algunos scripts e intenta sacar versiones
 nmap -sn red --> manda paquetes icmp a toda la red para descubrir equipos
 nmap  -sS -p- --open IP - oN tcp_scan.txt--> Escaneo de todos los puertos de la ip 
 nmap -sSU -p 53 --script dns-nsid IP --> escaneo del puerto tcp y udp 53, estando bloqueado por IDS para ver su flag
@@ -242,3 +243,20 @@ getuid —> ver usuario
 NT AUTORITY\SYSTEM —> USUARIO QUE CORRE LOS SERVICIOS
 shell —> cambiar a una shell normal y corriente
 ipconfig —> ver interfaces
+
+
+===================================
+APACHE
+===================================
+
+dirb IP --> buscar directorios
+
+
+===================================
+WORDPRESS
+===================================
+
+wpscan --url URL -e u  --> enumerar los usuarios
+
+
+
