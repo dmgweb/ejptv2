@@ -248,9 +248,10 @@ ipconfig —> ver interfaces
 ===================================
 APACHE
 ===================================
+ /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt
 
 dirb IP --> buscar directorios
-
+gobuster vhost -u http://<target_IP_address> -w <wordlist_file> --append-domain
 
 ===================================
 WORDPRESS
@@ -286,3 +287,11 @@ dnsrecon 	Combines multiple DNS reconnaissance techniques and supports various o
 theHarvester 	OSINT tool that gathers information from various sources, including DNS records (email addresses).
 
 dnsenum --enum inlanefreight.com -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -r
+
+
+nslookup -type=NS inlanefreight.htb IPLAB --> esto nos arroja su NS que es donde está la info del dominio
+Metemos ese NS por ejemplo ns.inlanefreight.htb en /etc/host con la ip del LAB
+dig axfr @ns.inlanefreight.htb inlanefreight.htb --> recibimos las zonas
+
+
+
