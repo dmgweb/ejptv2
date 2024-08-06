@@ -257,6 +257,7 @@ nikto -h inlanefreight.com -Tuning b --> fingerprint
 dirb IP --> buscar directorios
 gobuster vhost -u http://<target_IP_address> -w <wordlist_file> --append-domain
 gobuster dir 
+gobuster -x php 
 
 ===================================
 WORDPRESS
