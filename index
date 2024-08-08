@@ -276,7 +276,7 @@ gobuster vhost -u http://<target_IP_address> -w <wordlist_file> --append-domain
 gobuster dir 
 gobuster -x php 
 gobuster dir -w /usr/share/worldlist/disbuster/loquesea.txt -u IP
-
+gobuster vhost -w directory-list-2.3-medium -u [http://domain] --append-domain | grep -v "Status: 302"
 
 ===================================
 WORDPRESS
